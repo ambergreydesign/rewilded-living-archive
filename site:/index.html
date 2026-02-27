@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reverence, Rewilded — Living Archive</title>
+  <style>
+    :root{
+      --ink:#0e1412;
+      --bg:#0b0f0e;
+      --panel:#13211c;
+      --panel-2:#101a16;
+      --leaf:#2f6b56;
+      --glow:#e6c87a;
+      --copy:#e5e8ea;
+      --muted:#e0e3e4;
+      --grid-gap:22px;
+      --radius:22px;
+      --shadow:0 28px 68px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.06);
+      --ease:cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      height:100%;
+      background:linear-gradient(180deg,#0b0f0e 0%, #0f1714 50%, #0b0f0e 100%);
+      color:var(--copy);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans";
+      overflow-x:hidden;
+    }
+    .pilot-wide{
+  display:block;
+}
+
+.pilot-wide a{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+}
+
+.pilot-wide .pane{
+  padding:22px;
+}
+
+.pilot-wide .kv{
+  min-height:360px; /* adjust if you want taller/shorter */
+}
+
+.pilot-wide .kv img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  opacity:.92;
+  transition: transform .6s var(--ease), opacity .6s var(--ease);
+}
+
+.pilot-wide .pane:hover .kv img{
+  transform: scale(1.02);
+  opacity: .98;
+}
+
+.pilot-wide .play{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+}
+
+.pilot-wide .play span{
+  display:inline-grid;
+  place-items:center;
+  width:86px;
+  height:86px;
+  border-radius:999px;
+  background:rgba(15,25,21,.55);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  font-size:14px;
+  letter-spacing:.08em;
+  font-weight:800;
+  color:var(--copy);
+  backdrop-filter: blur(8px);
+}
+    a{color:var(--glow);text-decoration:none}
+    a:hover{opacity:.9}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px}
+
+    .hero{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);padding:72px;background:
+      radial-gradient(120% 100% at 80% 10%, rgba(230,200,122,.16) 0%, rgba(230,200,122,0) 40%),
+      linear-gradient(145deg, var(--panel) 0%, var(--panel-2) 65%);
+      isolation:isolate;margin-top:40px;}
+    .hero::after{content:"";position:absolute;inset:-40% -20% -20% 40%;background:conic-gradient(from 0deg, rgba(255,255,255,.07) 0 20%, transparent 20% 100%);filter:blur(40px);opacity:.6;z-index:0}
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center}
+    .hero h1{margin:0 0 14px;font-size:52px;letter-spacing:.02em}
+    .hero p{margin:10px 0 16px;line-height:1.35;color:var(--copy);font-size:20px}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .badge{border:1px solid rgba(230,200,122,.55);color:var(--glow);padding:8px 12px;border-radius:999px;font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+
+    .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px}
+    .btn{background:var(--leaf);color:#fff;border:none;padding:14px 18px;border-radius:14px;font-weight:700;letter-spacing:.03em;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+    .btn.alt{background:transparent;border:1px solid rgba(255,255,255,.24);color:var(--copy)}
+
+    .hero-media{position:relative;border-radius:18px;overflow:hidden;min-height:280px;background:#09110f;box-shadow:var(--shadow)}
+    .hero-media img, .hero-media video{width:100%;height:100%;object-fit:cover;display:block;opacity:.95;transform:translateY(0)}
+    .mark{position:absolute;right:16px;top:16px;width:84px;height:84px;border-radius:50%;border:2px solid rgba(255,255,255,.65);display:grid;place-items:center;font-weight:800;font-size:12px;letter-spacing:.08em}
+    .mark::after{content:"";position:absolute;width:58%;height:58%;border:2px solid rgba(255,255,255,.5);border-radius:50%}
+
+    .section{margin:40px 0 48px 0;}
+    .section h2{font-size:28px;margin:0 0 12px}
+    .section p.lead{color:var(--muted);max-width:780px;margin:0 0 18px}
+
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--grid-gap)}
+    .card{grid-column:span 4;background:linear-gradient(160deg,#0f1915,#0c1512);border-radius:18px;box-shadow:var(--shadow);padding:24px 24px 22px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-height:220px}
+    .card .thumb{position:relative;height:140px;border-radius:14px;overflow:hidden;background:#0b110f;margin-bottom:14px;width:100%}
+    .card .thumb img{width:100%;height:100%;object-fit:cover;opacity:.86}
+    .card h3{margin:0 0 6px;font-size:18px;text-align:left;width:100%}
+    .card p{margin:0;color:var(--copy);font-size:14px;line-height:1.35;text-align:left;width:100%}
+    /* --- Match Stories in Motion Typography --- */
+.card h3 {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  color: #e5e8ea !important;
+  margin-bottom: 6px !important;
+}
+
+.card p {
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+  color: #e5e8ea !important;
+  font-weight: 400 !important;
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+}
+    .card .meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:10px;width:100%}
+    .chip {
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.15);
+  font-size:12px;
+  color:var(--copy);
+  text-decoration:none;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+.chip:hover {
+  border-color:rgba(255,255,255,.35);
+  color:var(--glow);
+}
+
+    .pilot{display:grid;grid-template-columns:1fr 1fr;gap:var(--grid-gap);align-items:stretch}
+    .pilot .pane{background:linear-gradient(160deg,#0f1915,#0c1512);border-radius:18px;box-shadow:var(--shadow);padding:22px;text-align:left}
+    .pilot .pane h3{margin:0 0 10px;text-align:left}
+    .kv{position:relative;border-radius:14px;overflow:hidden;min-height:240px;background:#0a100e;margin-bottom:14px}
+    .kv img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9}
+    .list{display:grid;gap:10px}
+    .li{display:flex;gap:10px}
+    .li .dot{width:8px;height:8px;background:var(--glow);border-radius:50%;margin-top:8px;flex:0 0 8px}
+
+    .contact{display:grid;grid-template-columns:1fr 1fr;gap:var(--grid-gap)}
+    .card.contact-card{padding:22px;grid-column:span 1;text-align:left}
+    .field{display:grid;gap:6px;margin:8px 0}
+    .field input,.field textarea{width:100%;padding:12px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0c1411;color:var(--copy)}
+    .field textarea{min-height:120px;resize:vertical}
+
+    footer{margin:36px 0 18px;color:#aeb6b0;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1),
+              transform 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+    /* Staggers via data-delay */
+    [data-delay]{transition-delay:var(--delay,0s)}
+
+    /* ------------------- Responsive adjustments ------------------- */
+    @media (max-width:1080px){
+      .hero-grid{grid-template-columns:1fr;gap:28px}
+      .hero{padding:48px 28px}
+      .hero h1{font-size:42px}
+      .hero p{font-size:18px}
+      .hero .copy{max-width:780px}
+      .hero-media{min-height:220px;margin-top:12px}
+      .pilot{grid-template-columns:1fr}
+      .contact{grid-template-columns:1fr}
+      .card{grid-column:span 6}
+    }
+
+    @media (max-width:720px){
+      .wrap{padding:18px}
+      .hero{padding:36px 20px;margin-top:20px}
+      .hero h1{font-size:34px;line-height:1.1}
+      .hero p{font-size:16px;line-height:1.3}
+      .hero .copy{max-width:90vw}
+      .btn{padding:12px 14px;font-size:14px}
+      .badge{font-size:11px;padding:6px 10px}
+      .hero-media{min-height:180px;margin-top:16px}
+      .card{grid-column:span 12;text-align:left;align-items:flex-start}
+      .section{margin:48px 0 36px}
+      .pilot .pane{padding:16px;text-align:left}
+    }
+    .hero h1 {
+  font-size: clamp(28px, 3.5vw, 44px) !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+}
+
+.hero p {
+  font-size: clamp(15px, 1.1vw, 18px) !important;
+  line-height: 1.4 !important;
+  color: var(--copy) !important;
+  max-width: 680px;
+  margin-bottom: 18px;
+}
+
+.badge, .btn {
+  font-size: clamp(11px, 0.85vw, 14px) !important;
+}
+.hero {
+  margin-top: 120px !important; /* pushes hero below fixed nav */
+  position: relative;
+  z-index: 0; /* ensures nav stays visually above */
+}
+
+header.wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.section-spaced{
+  margin-top:96px;
+}
+
+    /* ------------------- Video Modal ------------------- */
+    .video-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      z-index:9999;
+    }
+
+    .video-modal.is-open{
+      display:block;
+    }
+
+    .video-backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.68);
+      backdrop-filter: blur(10px);
+    }
+
+    .video-shell{
+      position:relative;
+      max-width: 980px;
+      margin: min(8vh,80px) auto 0;
+      width: calc(100% - 36px);
+      border-radius: 18px;
+      background: linear-gradient(160deg,#0f1915,#0c1512);
+      box-shadow: 0 40px 120px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+
+    .video-frame{
+      position:relative;
+      width:100%;
+      aspect-ratio: 16 / 9;
+      background:#08100d;
+    }
+
+    .video-frame iframe{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+    }
+
+    .video-close{
+      position:absolute;
+      right:12px;
+      top:10px;
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(15,25,21,.55);
+      color: var(--copy);
+      cursor:pointer;
+      font-size:22px;
+      line-height:1;
+      display:grid;
+      place-items:center;
+      z-index:2;
+    }
+
+    .video-close:hover{
+      border-color: rgba(255,255,255,.35);
+      color: var(--glow);
+    }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div class="hero">
+      <div class="hero-grid">
+        <div class="copy">
+          <h1 class="reveal" data-delay="0s">Rewilded</h1>
+          <p class="reveal" data-delay=".1s">Design research for a new type of zoo. This page collects data, experiments, and prototypes exploring how awe, empathy, and transparency can reshape conservation experiences. The goal is simple: align what is best for animals with what genuinely moves people, then invest capital where both meet.</p>
+          <div class="badges reveal" data-delay=".2s">
+            <span class="badge">Design with Dissonance</span>
+            <span class="badge">Engaging Gen Z</span>
+            <span class="badge">Standard of Human Interaction</span>
+          </div>
+          <div class="cta reveal" data-delay=".3s">
+            <button class="btn" onclick="document.getElementById('research').scrollIntoView({behavior:'smooth'})">Browse the Archive</button>
+            <button class="btn alt" onclick="document.getElementById('Pilot').scrollIntoView({behavior:'smooth'})">Full Presentation</button>
+          </div>
+        </div>
+        
+        <div class="hero-media reveal" data-delay=".4s" aria-label="Preview still">
+          <img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/11/hero-image.jpg" alt="Cinematic still placeholder"/>
+          <div class="mark" title="Reverence, Rewilded">RR</div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <section id="video-series" style="max-width:1200px; margin:0 auto; padding:60px 24px;">
+    <h2 style="font-size:36px; margin-bottom:24px; color:#e5e8ea;">Stories in Motion</h2>
+  
+    <!-- Unified grid: all cards top-aligned -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:28px; align-items:start;">
+  
+      <!-- CARD 1: The Trust Gap -->
+      <article style="background:linear-gradient(160deg,#0f1915,#0c1512); border-radius:18px; box-shadow:0 28px 68px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.06); overflow:hidden; color:#e2e5e7; max-width:380px; margin:auto; min-height:450px;">
+        <img 
+          src="https://amberuxd.wordpress.com/wp-content/uploads/2026/02/now.png" 
+          alt="The Trust Gap video thumbnail"
+          style="width:100%; height:220px; object-fit:cover; border-bottom:1px solid rgba(255,255,255,.05);"
+        >
+        <div style="padding:20px;">
+          <h3 style="font-size:22px; margin-top:0; color:#e2e5e7;">Gen Z and the Zoo</h3>
+          <p style="font-size:16px; line-height:1.45; color:#e2e5e7;">
+            “The Trust Gap” explores how the generation raised on awareness sees through spectacle. <br> Time: 1 min 
+          </p>
+          <a href="https://youtu.be/AR1gRdaK6x4" class="js-video" data-video="AR1gRdaK6x4" style="display:inline-block; margin-top:40px; padding:10px 16px; background:#2f6b56; border-radius:10px; color:#e2e5e7; text-decoration:none;">
+            ▶ Watch
+          </a>
+        </div>
+      </article>
+  
+      <!-- CARD 2: Why Dallas -->
+      <article style="background:linear-gradient(160deg,#0f1915,#0c1512); border-radius:18px; box-shadow:0 28px 68px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.06); overflow:hidden; color:#e2e5e7; max-width:380px; margin:auto; min-height:450px;">
+        <img 
+          src="https://amberuxd.wordpress.com/wp-content/uploads/2025/11/the-solution.png"
+          alt="Why Dallas video thumbnail"
+          style="width:100%; height:220px; object-fit:cover; border-bottom:1px solid rgba(255,255,255,.05);"
+        >
+        <div style="padding:20px;">
+          <h3 style="font-size:22px; margin-top:0; color:#e2e5e7;">A New Zoo Experience</h3>
+          <p style="font-size:16px; line-height:1.45; color:#e2e5e7;">
+            “Piloting a pop-up experiences, learning how to bring in Gen Z, one small, intentional step at a time. <br> Time: 1 min 
+          </p>
+          <a href="https://youtu.be/fETbnjmHi1s" class="js-video" data-video="fETbnjmHi1s" style="display:inline-block; margin-top:40px; padding:10px 16px; background:#2f6b56; border-radius:10px; color:#e2e5e7; text-decoration:none;">
+            ▶ Watch
+          </a>
+        </div>
+      </article>
+  
+      <!-- CARD 3: The Zoo of the Future -->
+      <article style="background:linear-gradient(160deg,#0f1915,#0c1512); border-radius:18px; box-shadow:0 28px 68px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.06); overflow:hidden; color:#e2e5e7; max-width:380px; margin:auto; min-height:450px;">
+        <img 
+          src="https://amberuxd.wordpress.com/wp-content/uploads/2025/11/the-future.png" 
+          alt="Zoo of the Future video thumbnail" 
+          style="width:100%; height:220px; object-fit:cover; border-bottom:1px solid rgba(255,255,255,.05);"
+        >
+        <div style="padding:20px;">
+          <h3 style="font-size:22px; margin-top:0; color:#e2e5e7;">The Zoo of the Future</h3>
+          <p style="font-size:16px; line-height:1.45; color:#e2e5e7;">
+            Imagine a place where visitors slow down, where awe replaces spectacle, and every step funds the wild. <br> Time: 1 min
+          </p>
+          <a href="https://youtu.be/6tFeHmeDklM" class="js-video" data-video="6tFeHmeDklM" style="display:inline-block; margin-top:40px; padding:10px 16px; background:#2f6b56; border-radius:10px; color:#e2e5e7; text-decoration:none;">
+            ▶ Watch
+          </a>
+        </div>
+      </article>
+  
+    </div>
+  </section>
+  <main class="wrap">
+    <section id="research" class="section">
+      <h2 class="reveal" style="--delay:0s">Research Library</h2>
+      <p class="lead reveal" style="--delay:.1s">The research behind the rewilding.</p>
+      <div class="grid">
+        <article class="card reveal" style="--delay:.1s"><div class="thumb"><img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/11/resesarch-video-thumbnail.jpeg" alt="Emotional UX placeholder"/></div><h3>Designing with Dissonance</h3><p>When discomfort becomes data.
+          Surveys reveal how emotional tension can predict readiness for change. <br> Time: 5 min</p><div class="meta" style="position:relative; z-index:5;">
+            <a href="https://amberuxd.wordpress.com/wp-content/uploads/2025/11/the-future-of-zoo-design-designing-with-dissonance-amber-design.pdf" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="chip" 
+               style="z-index:5; pointer-events:auto;">
+               PDF
+            </a>
+            <a href="https://youtu.be/NbB864dF0Hw"
+               class="btn js-video"
+               data-video="NbB864dF0Hw"
+               style="z-index:5; pointer-events:auto;">
+               ▶ Watch
+            </a>
+          </div></article>
+        <article class="card reveal" style="--delay:.2s"><div class="thumb"><img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/12/13-copythe-next-visit-designing-for-a-generation-losing-faith-in-zoos.-23-image-9.png" alt="World map with arrows pointing from USA to different countries "/></div><h3>The World Wide Zoo Economy</h3><p>How the money comes in and where it goes. What does following the money tell us about the purpose of the zoo? <br> Time: 3 min</p><div class="meta">
+          <a href="https://amberuxd.wordpress.com/wp-content/uploads/2025/11/the-world-wide-zoo-economy.pdf" target="_blank" class="chip">PDF</a>
+          <a href="https://youtu.be/4nbNzZyz3zI" class="btn js-video" data-video="4nbNzZyz3zI"> ▶ Watch</a>
+        </div></article>
+        <article class="card reveal" style="--delay:.3s">
+  <div class="thumb">
+    <img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/12/13-copythe-next-visit-designing-for-a-generation-losing-faith-in-zoos.-23-image-10.png" alt="Map of USA with different colored dots"/>
+  </div>
+  <h3>The Greenwashing Index</h3>
+  <p>Diving into 990s to get an idea of what gaps exist between what zoos say in mission statements verses what they fund. <br> Time: 2 min</p>
+
+  <div class="meta">
+
+    <!-- Map chip → opens Figma in a new tab -->
+    <a 
+      href="https://www.figma.com/proto/bdd4NC1zzfbTmPPI3k3VAA/Greenwashing-Index?page-id=0%3A1&node-id=7-4&viewport=-3518%2C5124%2C0.1&t=lVFXebAmdnr5E5Bo-1&scaling=scale-down&content-scaling=fixed" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      class="chip"
+    >
+      Map
+    </a>
+
+    <!-- Watch button → opens YouTube -->
+    <a 
+      href="https://youtu.be/9ZuqJsoIpeE"
+      class="btn js-video"
+      data-video="9ZuqJsoIpeE"
+      style="z-index:5; pointer-events:auto;"
+    >
+      ▶ Watch
+    </a>
+
+  </div>
+</article>
+        <article class="card reveal" style="--delay:.4s"><div class="thumb"><img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/12/signs-thumbnail.png" alt="SIGNS placeholder"/></div><h3>S.I.G.N.S.</h3><p>Introducing a new standard of human interaction, designed to inspire empathy and conservation. <br> Time: 4 min</p> <a href="https://youtu.be/CzcaEeNrvm4" class="js-video" data-video="CzcaEeNrvm4" style="display:inline-block; margin-top:14px; padding:10px 16px; background:#2f6b56; border-radius:10px; color:#e2e5e7; text-decoration:none;">
+          ▶ Watch
+        </a></article>
+        <article class="card reveal" style="--delay:.5s"><div class="thumb"><img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/12/stories-that-stay_thumbnail.png" alt="Signage placeholder"/></div><h3>Stories that Stay</h3><p>Emotional storytelling that turns everyday zoo moments into lasting real-world conservation action. <br> Time: 2 min</p><a href="https://youtu.be/OkvKIkUN29I" class="js-video" data-video="OkvKIkUN29I" style="display:inline-block; margin-top:14px; padding:10px 16px; background:#2f6b56; border-radius:10px; color:#e2e5e7; text-decoration:none;">
+          ▶ Watch
+        </a></article>
+        <article class="card reveal" style="--delay:.6s"><div class="thumb"><img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/12/green-eats-thumbnail.png" alt="Toolkit placeholder"/></div><h3>Green Eats</h3><p>Environmentally friendly snacks that transform concessions into meaningful conservation opportunities. <br> Time: 1.5 min</p><a href="https://youtu.be/-256aZTug9s" class="js-video" data-video="-256aZTug9s" style="display:inline-block; margin-top:14px; padding:10px 16px; background:#2f6b56; border-radius:10px; color:#e2e5e7; text-decoration:none;">
+          ▶ Watch
+        </a></article>
+      </div>
+    </section>
+
+    <section>
+      <section id="Pilot" class="section section-spaced">
+        <h2 class="reveal" style="--delay:0s">The Full Story</h2>
+        <p class="lead reveal" style="--delay:.1s">
+          A single, end to end narrative, from trust gap to prototype pilots to the future model. This is the complete presentation, in one place. <br> Time: 10 min
+        </p>
+      
+        <div class="pilot-wide">
+          <a href="https://youtu.be/qzbWyC9anP8" class="js-video" data-video="qzbWyC9anP8" rel="noopener noreferrer">
+            <div class="pane reveal" style="--delay:.2s">
+              <div class="kv" style="position:relative;">
+                <img src="https://amberuxd.wordpress.com/wp-content/uploads/2025/12/13-copythe-next-visit-designing-for-a-generation-losing-faith-in-zoos.-23-image-8-2.png" alt="Full presentation thumbnail"/>
+                <div class="play"><span>▶ Watch</span></div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+    </section>
+     
+    
+     
+
+   
+
+<!-- Video Modal -->
+<div id="videoModal" class="video-modal" aria-hidden="true" role="dialog" aria-label="Video player">
+  <div class="video-backdrop" data-close></div>
+
+  <div class="video-shell" role="document">
+    <button class="video-close" type="button" aria-label="Close video" data-close>×</button>
+
+    <div class="video-frame">
+      <iframe
+        id="videoFrame"
+        title="Embedded video"
+        src=""
+        frameborder="0"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Module 2: Atmospheric Parallax for hero image -->
+<script>
+  (function(){
+    const heroMedia = document.querySelector('.hero-media');
+    const heroEl = heroMedia ? heroMedia.querySelector('img,video') : null;
+    if(!heroMedia || !heroEl) return;
+
+    let ticking = false;
+
+    const speed = 0.02;   // ~2% of scroll speed
+    const maxShift = 24;  // clamp translate to avoid visible cropping
+
+    // Use the real scrolling element (Semplice sometimes scrolls a wrapper)
+    const scroller = document.scrollingElement || document.documentElement;
+
+    function getScrollTop(){
+      // window.scrollY works in most cases; fall back to scrollingElement
+      return (typeof window.scrollY === 'number' && window.scrollY) ? window.scrollY : (scroller ? scroller.scrollTop : 0);
+    }
+
+    function applyParallax(){
+      // Recompute the hero's document position every time.
+      // This prevents drift when Semplice/lazy-loaded modules shift layout.
+      const rect = heroMedia.getBoundingClientRect();
+      const scrollTop = getScrollTop();
+      const baseTop = rect.top + scrollTop;
+
+      const raw = (scrollTop - baseTop) * speed;
+      const y = Math.max(-maxShift, Math.min(maxShift, raw));
+
+      heroEl.style.transform = `translate3d(0, ${y}px, 0)`;
+
+      const op = Math.min(1, 0.95 + Math.abs(y) / 2000);
+      heroEl.style.opacity = op.toFixed(3);
+    }
+
+    function onScroll(){
+      if(ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        applyParallax();
+        ticking = false;
+      });
+    }
+
+    // Initial paint
+    applyParallax();
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => {
+      applyParallax();
+    }, { passive: true });
+
+    // If the hero media loads after DOMContentLoaded, update once
+    if(heroEl.tagName === 'IMG' && !heroEl.complete){
+      heroEl.addEventListener('load', () => {
+        applyParallax();
+      }, { once: true });
+    }
+
+    // When the video modal closes, Semplice/page layout can jump slightly.
+    // Re-apply parallax after any click that closes the modal.
+    document.addEventListener('click', (e) => {
+      if(e.target.matches('[data-close]') || e.target.closest('[data-close]')){
+        window.requestAnimationFrame(applyParallax);
+      }
+    });
+  })();
+</script>
+
+<!-- Scroll Reveal (simplified and reliable) -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const reveals = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+        } else {
+          entry.target.classList.remove("in-view");
+        }
+      });
+    }, { threshold: 0.05 });
+
+    // Apply observer to each reveal
+    reveals.forEach(el => {
+      el.classList.add("ready"); // sets base opacity
+      observer.observe(el);
+    });
+  });
+</script>
+
+<!-- Video Modal JS -->
+<script>
+  (function(){
+    const modal = document.getElementById('videoModal');
+    const frame = document.getElementById('videoFrame');
+
+    if(!modal || !frame) return;
+
+    function openModal(videoId){
+      const origin = (window.location && window.location.origin && window.location.origin !== 'null')
+        ? `&origin=${encodeURIComponent(window.location.origin)}`
+        : '';
+      const src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1${origin}`;
+      frame.src = src;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden','true');
+      frame.src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest('.js-video');
+      if(trigger){
+        e.preventDefault();
+        openModal(trigger.dataset.video);
+        return;
+      }
+
+      if(e.target.matches('[data-close]') || e.target.closest('[data-close]')){
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && modal.classList.contains('is-open')){
+        closeModal();
+      }
+    });
+  })();
+</script>
+ 
+</body>
+</html>
